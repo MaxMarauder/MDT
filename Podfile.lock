@@ -1,0 +1,29 @@
+PODS:
+  - AMScrollingNavbar (5.6.0)
+  - CryptoSwift (1.1.2)
+  - Reusable (4.1.0):
+    - Reusable/Storyboard (= 4.1.0)
+    - Reusable/View (= 4.1.0)
+  - Reusable/Storyboard (4.1.0)
+  - Reusable/View (4.1.0)
+
+DEPENDENCIES:
+  - AMScrollingNavbar
+  - CryptoSwift
+  - CryptoSwift (= 1.1.2)
+  - Reusable
+
+SPEC REPOS:
+  trunk:
+    - AMScrollingNavbar
+    - CryptoSwift
+    - Reusable
+
+SPEC CHECKSUMS:
+  AMScrollingNavbar: cf0ec5a5ee659d76ba2509f630bf14fba7e16dc3
+  CryptoSwift: 31dacd1f13427439ddae5b5cbaae4c8dbc43047e
+  Reusable: 82be188f29d96dc5eff0db7b2393bcc08d2cdd5b
+
+PODFILE CHECKSUM: 5f7fedd4403a89fa6a0e67bcba1910a18fb8586c
+
+COCOAPODS: 1.8.4

@@ -1,0 +1,6 @@
+framework module Pods_MDT {
+  umbrella header "Pods-MDT-umbrella.h"
+
+  export *
+  module * { export * }
+}

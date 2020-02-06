@@ -1,0 +1,26 @@
+[
+    {
+        "identifier": "1",
+        "name": "QWERTY",
+        "brand": "Brand 1",
+        "original_price": 99.95,
+        "current_price": 59.95,
+        "currency": "EUR",
+        "image": {
+            "id": 101,
+            "url": "https://qwerty/101.jpg"
+        }
+    },
+    {
+        "identifier": "2",
+        "name": "ASDFGH",
+        "brand": "Brand 2",
+        "original_price": 199.95,
+        "current_price": 199.95,
+        "currency": "USD",
+        "image": {
+            "id": 201,
+            "url": "https://asdfgh/201.jpg"
+        }
+    }
+]
