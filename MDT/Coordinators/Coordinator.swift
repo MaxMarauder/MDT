@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol CoordinatorType: class {
+protocol CoordinatorType: AnyObject {
     var children: [CoordinatorType] { get set }
     var repositories: Repositories { get }
     var rootController: UIViewController { get }

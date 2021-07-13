@@ -12,7 +12,7 @@ import Reusable
 protocol ViewModel: Coordinated {
 }
 
-protocol ViewModelBased: class {
+protocol ViewModelBased: AnyObject {
     associatedtype T: ViewModel
     var viewModel: T! { get set }
 }
