@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class ProductListViewModel: NSObject, ViewModel {
+final class ProductListViewModel: NSObject, ViewModel {
     weak var coordinator: CoordinatorType?
     let fetchedResultsController: NSFetchedResultsController<Product>
     var products: [Product] {
@@ -56,9 +56,8 @@ class ProductListViewModel: NSObject, ViewModel {
     }
 }
 
-extension ProductListViewModel: NSFetchedResultsControllerDelegate {
-    
-    open func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+extension ProductListViewModel: NSFetchedResultsControllerDelegate {    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         onProductsFetched?()
     }
 }

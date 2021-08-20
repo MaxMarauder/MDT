@@ -10,7 +10,7 @@ import UIKit
 import Reusable
 import AMScrollingNavbar
 
-class ProductDetailsViewController: UIViewController, StoryboardBased, ViewModelBased, UIScrollViewDelegate {
+final class ProductDetailsViewController: UIViewController, StoryboardBased, ViewModelBased, UIScrollViewDelegate {
     @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var imgView: UIImageView!
     @IBOutlet private var infoView: UIView!

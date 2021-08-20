@@ -2,8 +2,8 @@
 //  APICleint.swift
 //  MDT
 //
-//  Created by Maksym Kershengolts on 18.05.19.
-//  Copyright © 2019 Maksym Kershengolts. All rights reserved.
+//  Created by Maksym Kershengolts on 20.08.21.
+//  Copyright © 2021 Maksym Kershengolts. All rights reserved.
 //
 
 import Foundation
@@ -24,7 +24,7 @@ protocol APIClientType {
     func request<R: Resource>(resource: R, completion: @escaping PayloadCompletion<R.Payload>)
 }
 
-class APIClient: APIClientType {
+final class APIClient: APIClientType {
     enum HTTPMethod: String {
         case get = "GET"
         case put = "PUT"
@@ -48,11 +48,20 @@ class APIClient: APIClientType {
         request.httpMethod = method.rawValue
         request.httpBody = body
         request.allHTTPHeaderFields = headers
+        #if DEBUG
+        print("🌀 Request [\(method.rawValue)]: \(url)")
+        #endif
         let task = URLSession.shared.dataTask(with: request) { data, response, nsError in
             DispatchQueue.main.async {
                 if let data = data, nsError == nil {
+                    #if DEBUG
+                    print("✅ Response: \(String(data: data, encoding: .utf8) ?? "???")")
+                    #endif
                     completion(.success(data))
                 } else {
+                    #if DEBUG
+                    print("⛔️ Network error: \(nsError?.localizedDescription ?? "???")")
+                    #endif
                     completion(.failure(.networkingError(nsError)))
                 }
             }

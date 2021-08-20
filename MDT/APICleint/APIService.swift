@@ -16,6 +16,9 @@ extension Data {
             let value = try decoder.decode(T.self, from: self)
             return .success(value)
         } catch {
+            #if DEBUG
+            print("⛔️ JSON parsing error: \(error)")
+            #endif
             return .failure(.parsingError(error))
         }
     }
@@ -96,7 +99,7 @@ extension Service {
 /**
  A `Resource` is a `Service` that returns some data.
 
- Provide a `parse` function to convert the response `Data` into a `Payload` value. To provide automatic parsing, there is a default implementation for `parse` if `Payload` is `Decodable` 🎉.
+ Provide a `parse` function to convert the response `Data` into a `Payload` value. To provide automatic parsing, there is a default implementation for `parse` if `Payload` is `Decodable`.
  */
 protocol Resource: Service {
     associatedtype Payload
@@ -106,13 +109,5 @@ protocol Resource: Service {
 extension Resource where Payload: Decodable {
     func parse(_ data: Data) -> Result<Payload, APIError> {
         return data.parse()
-    }
-}
-
-class Products: Resource {
-    typealias Payload = [APIPayload.Product]
-
-    static var endpoint: String {
-        return "cars"
     }
 }

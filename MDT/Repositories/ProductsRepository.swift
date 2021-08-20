@@ -15,7 +15,7 @@ protocol ProductsRepositoryType {
     func set(note: String?, product: Product)
 }
 
-class ProductsRepository: ProductsRepositoryType {
+final class ProductsRepository: ProductsRepositoryType {
     let apiClient: APIClientType
     let coreDataManager: CoreDataManagerType
 

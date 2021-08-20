@@ -14,7 +14,7 @@ enum AppState {
     case productDetails(product: Product)
 }
 
-class AppCoordinator: CoordinatorType {
+final class AppCoordinator: CoordinatorType {
     var repositories: Repositories
     lazy var rootController: UIViewController = {
         let viewModel = ProductListViewModel(withCoordinator: self)

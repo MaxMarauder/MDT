@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ProductDetailsViewModel: ViewModel {
+final class ProductDetailsViewModel: ViewModel {
     weak var coordinator: CoordinatorType?
     var product: Product
 

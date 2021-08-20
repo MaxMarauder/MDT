@@ -10,7 +10,7 @@ import UIKit
 import Reusable
 import AMScrollingNavbar
 
-class ProductListViewController: UITableViewController, StoryboardBased, ViewModelBased {
+final class ProductListViewController: UITableViewController, StoryboardBased, ViewModelBased {
     @IBOutlet private var searchBar: UISearchBar!
 
     var viewModel: ProductListViewModel!
