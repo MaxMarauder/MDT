@@ -8,7 +8,6 @@
 
 import UIKit
 import Reusable
-import AMScrollingNavbar
 
 final class ProductDetailsViewController: UIViewController, StoryboardBased, ViewModelBased, UIScrollViewDelegate {
     @IBOutlet private var scrollView: UIScrollView!
@@ -41,14 +40,6 @@ final class ProductDetailsViewController: UIViewController, StoryboardBased, Vie
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let navigationController = navigationController as? ScrollingNavigationController {
-            navigationController.showNavbar()
-        }
-    }
-    
     private func updateZoom() {
         guard let image = imgView.image else {
             return

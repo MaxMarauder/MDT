@@ -8,7 +8,6 @@
 
 import UIKit
 import Reusable
-import AMScrollingNavbar
 
 final class ProductListViewController: UITableViewController, StoryboardBased, ViewModelBased {
     @IBOutlet private var searchBar: UISearchBar!
@@ -27,14 +26,6 @@ final class ProductListViewController: UITableViewController, StoryboardBased, V
         }
 
         viewModel.refresh() { }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let navigationController = navigationController as? ScrollingNavigationController {
-            navigationController.followScrollView(tableView, delay: 50.0)
-        }
     }
 
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {

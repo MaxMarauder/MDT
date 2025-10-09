@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AMScrollingNavbar
 
 enum AppState {
     case productList
@@ -19,7 +18,7 @@ final class AppCoordinator: CoordinatorType {
     lazy var rootController: UIViewController = {
         let viewModel = ProductListViewModel(withCoordinator: self)
         let controller = ProductListViewController.instantiate(with: viewModel)
-        return ScrollingNavigationController(rootViewController: controller)
+        return UINavigationController(rootViewController: controller)
     }()
     var children: [CoordinatorType] = []
 
