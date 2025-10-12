@@ -19,3 +19,9 @@ MDT - is a little iOS app which:
 - Unit and UI tests
 - Cocoapods
 - Mockaroo - backend API mocking tool
+## How about SwiftUI?
+The repository includes **swiftui** branch with the project migrated to SwiftUI, where:
+- All ViewControllers and the application entry point have been converted to SwiftUI
+- ViewModels and Coordinators adapted to be used by SwiftUI Views
+- Cocoapods replaced with Swift Package Manager
+- Custom image caching replaced with a third-party framework for the sake of simplicity
