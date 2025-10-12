@@ -25,10 +25,7 @@ struct MDTApp: App {
     
     var body: some Scene {
         WindowGroup {
-            let viewModel = ProductListViewModel(withCoordinator: appCoordinator)
-            ProductListView(viewModel: viewModel)
-
-//            appCoordinator.rootView
+            appCoordinator.rootView
         }
     }
 }
