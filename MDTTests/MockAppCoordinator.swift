@@ -7,17 +7,19 @@
 //
 
 import UIKit
+import SwiftUI
 @testable import MDT
 
 class MockAppCoordinator: CoordinatorType {
     var children: [CoordinatorType] = []
     let repositories = Repositories(productsRepository: MockProductsRepository(coreDataManager: CoreDataManager()))
-    let rootController = UIViewController()
+    let rootView = AnyView(EmptyView())
     
     var navigateCount: Int = 0
     
-    func navigate(to state: AppState) {
+    func view(for state: AppState) -> AnyView {
         navigateCount += 1
+        return AnyView(EmptyView())
     }
     
     

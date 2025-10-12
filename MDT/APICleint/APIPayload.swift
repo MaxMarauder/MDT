@@ -9,7 +9,7 @@
 import Foundation
 
 struct APIPayload {
-    struct Image: Decodable {
+    struct ProductImage: Decodable {
         let id: Int
         let url: String
     }
@@ -21,6 +21,6 @@ struct APIPayload {
         let original_price: Double
         let current_price: Double
         let currency: String
-        let image: Image
+        let image: ProductImage
     }
 }

@@ -1,0 +1,24 @@
+{
+  "originHash" : "51c7c671259caefadde153423e91e0cf29a4e0ca96ce4e815d3ef6d7841be57d",
+  "pins" : [
+    {
+      "identity" : "cachedasyncimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/0xWDG/CachedAsyncImage",
+      "state" : {
+        "revision" : "0c8647a8b282af53557d42619c48df7b64a08c55",
+        "version" : "0.0.3"
+      }
+    },
+    {
+      "identity" : "zoomable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ryohey/Zoomable.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "27463744a1c82e550959703153bd6f3c62fef906"
+      }
+    }
+  ],
+  "version" : 3
+}

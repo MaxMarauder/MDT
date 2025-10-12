@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import SwiftUI
 
 protocol CoordinatorType: AnyObject {
     var children: [CoordinatorType] { get set }
     var repositories: Repositories { get }
-    var rootController: UIViewController { get }
-    func navigate(to state: AppState)
+    var rootView: AnyView { get }
+    
+    func view(for state: AppState) -> AnyView
 }
 
 protocol ChildCoordinatorType: CoordinatorType {

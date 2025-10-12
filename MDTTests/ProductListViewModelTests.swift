@@ -42,9 +42,4 @@ class ProductListViewModelTests: XCTestCase {
         sut.filter(with: "abc")
         waitForExpectations(timeout: 1.0)
     }
-    
-    func testOpenDetails() {
-        sut.openDetails(product: Product())
-        XCTAssertEqual(self.mockAppCoordinator.navigateCount, 1)
-    }
 }

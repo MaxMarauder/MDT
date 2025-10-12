@@ -18,7 +18,7 @@ class ProductDetailsViewModelTests: XCTestCase {
     
     override func setUp() {
         mockAppCoordinator = MockAppCoordinator()
-        sut = ProductDetailsViewModel(withCoordinator: mockAppCoordinator, product: Product())
+        sut = ProductDetailsViewModel(withCoordinator: mockAppCoordinator, product: ProductPreview())
     }
     
     override func tearDown() {

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 enum AppState {
     case productList
@@ -15,10 +16,9 @@ enum AppState {
 
 final class AppCoordinator: CoordinatorType {
     var repositories: Repositories
-    lazy var rootController: UIViewController = {
+    lazy var rootView: AnyView = {
         let viewModel = ProductListViewModel(withCoordinator: self)
-        let controller = ProductListViewController.instantiate(with: viewModel)
-        return UINavigationController(rootViewController: controller)
+        return AnyView(ProductListView(viewModel: viewModel))
     }()
     var children: [CoordinatorType] = []
 
@@ -26,18 +26,13 @@ final class AppCoordinator: CoordinatorType {
         self.repositories = repositories
     }
 
-    func coordinate(inWindow window: UIWindow) {
-        window.rootViewController = rootController
-    }
-
-    func navigate(to state: AppState) {
+    func view(for state: AppState) -> AnyView {
         switch state {
         case .productDetails(let product):
             let viewModel = ProductDetailsViewModel(withCoordinator: self, product: product)
-            let controller = ProductDetailsViewController.instantiate(with: viewModel)
-            (rootController as? UINavigationController)?.pushViewController(controller, animated: true)
+            return AnyView(ProductDetailsView(viewModel: viewModel))
         default:
-            break
+            return AnyView(EmptyView())
         }
     }
 }

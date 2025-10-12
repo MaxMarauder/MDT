@@ -23,11 +23,11 @@ class MDTUITests: XCTestCase {
 
     func testExample() {
         app.launch()
-        let searchBar = app.searchFields.firstMatch
-        let fromCoordinate = searchBar.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
-        let toCoordinate = searchBar.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 10))
+        let cell = app.collectionViews.cells.firstMatch
+        let fromCoordinate = cell.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+        let toCoordinate = cell.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 10))
         fromCoordinate.press(forDuration: 0.1, thenDragTo: toCoordinate)
-        if !app.tables.cells.firstMatch.waitForExistence(timeout: 5) {
+        if !app.collectionViews.cells.firstMatch.waitForExistence(timeout: 5) {
             XCTFail("No data was loaded")
         }
     }

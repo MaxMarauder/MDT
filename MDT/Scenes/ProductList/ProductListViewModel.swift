@@ -9,13 +9,22 @@
 import Foundation
 import CoreData
 
-final class ProductListViewModel: NSObject, ViewModel {
+final class ProductListViewModel: NSObject, ViewModel, ObservableObject {
     weak var coordinator: CoordinatorType?
+    
     let fetchedResultsController: NSFetchedResultsController<Product>
+    
     var products: [Product] {
         return fetchedResultsController.fetchedObjects ?? []
     }
+    
     var onProductsFetched: (() -> Void)?
+
+    @Published var searchText: String = "" {
+        didSet {
+            filter(with: searchText)
+        }
+    }
 
     init(withCoordinator coordinator: CoordinatorType) {
         self.coordinator = coordinator
@@ -48,16 +57,14 @@ final class ProductListViewModel: NSObject, ViewModel {
         } catch {
             fatalError("Error fetching results \(error)")
         }
+        objectWillChange.send()
         onProductsFetched?()
-    }
-
-    func openDetails(product: Product) {
-        coordinator?.navigate(to: .productDetails(product: product))
     }
 }
 
 extension ProductListViewModel: NSFetchedResultsControllerDelegate {    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        objectWillChange.send()
         onProductsFetched?()
     }
 }
