@@ -35,6 +35,10 @@ final class ProductListViewModel: ObservableObject {
     /// pipeline is torn down automatically.
     private var cancellables = Set<AnyCancellable>()
 
+    /// Whether the initial load for this app session has already run, so returning
+    /// to the list (e.g. from product details) doesn't trigger it again.
+    private var hasLoaded = false
+
     init(repository: any ProductsRepository, router: Router) {
         self.repository = repository
         self.router = router
@@ -82,11 +86,19 @@ final class ProductListViewModel: ObservableObject {
 
     // MARK: Lifecycle / actions
 
-    /// Called from the view's `.task`: show persisted data immediately, then refresh
-    /// from the network.
+    /// Called from the view's `.task`. Runs once per app session: it shows the
+    /// persisted products, and only fetches from the network when nothing is
+    /// persisted yet (the first-ever launch). On later launches the stored list is
+    /// shown as-is and stays put until the user pulls to refresh — so returning
+    /// from product details never silently reloads the list.
     func onAppear() async {
-        await repository.load()
-        await refresh()
+        guard !hasLoaded else { return }
+        hasLoaded = true
+
+        let persisted = await repository.load()
+        if persisted.isEmpty {
+            await refresh()
+        }
     }
 
     /// Drives `.refreshable` (pull-to-refresh). Logs and swallows errors — a

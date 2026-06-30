@@ -51,11 +51,13 @@ public final class DefaultProductsRepository: ProductsRepository {
 
     // MARK: ProductsRepository
 
-    public func load() async {
+    @discardableResult
+    public func load() async -> [Product] {
         // `await` hops to the store actor, runs the fetch there, and resumes back
         // on the main actor with a `Sendable` `[Product]` — no locks, no races.
         let products = await store.fetchAll()
         subject.send(products)
+        return products
     }
 
     public func refresh() async throws {

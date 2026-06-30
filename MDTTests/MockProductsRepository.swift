@@ -23,7 +23,11 @@ final class MockProductsRepository: ProductsRepository {
     private(set) var lastNote: String?
     private(set) var lastNoteProductID: String?
 
-    func load() async { loadCallCount += 1 }
+    @discardableResult
+    func load() async -> [Product] {
+        loadCallCount += 1
+        return subject.value
+    }
 
     func refresh() async throws { refreshCallCount += 1 }
 

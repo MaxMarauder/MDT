@@ -25,8 +25,11 @@ public protocol ProductsRepository: AnyObject {
     /// edit — through one declarative Combine pipeline.
     var productsPublisher: AnyPublisher<[Product], Never> { get }
 
-    /// Publishes whatever is already persisted (offline-first first paint).
-    func load() async
+    /// Loads persisted products and publishes them (offline-first first paint).
+    /// Returns the loaded snapshot so the caller can decide whether an initial
+    /// network fetch is needed (e.g. nothing persisted yet on a first launch).
+    @discardableResult
+    func load() async -> [Product]
 
     /// Fetches from the network, persists (upsert + prune), then republishes.
     func refresh() async throws

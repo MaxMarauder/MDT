@@ -66,4 +66,39 @@ struct ProductListViewModelTests {
 
         #expect(repo.refreshCallCount == 1)
     }
+
+    @Test("first launch with an empty store fetches from the network")
+    func onAppearFetchesWhenStoreEmpty() async {
+        let repo = MockProductsRepository() // publisher starts empty
+        let viewModel = ProductListViewModel(repository: repo, router: Router())
+
+        await viewModel.onAppear()
+
+        #expect(repo.loadCallCount == 1)
+        #expect(repo.refreshCallCount == 1)
+    }
+
+    @Test("later launch with persisted data does not auto-fetch")
+    func onAppearSkipsFetchWhenStoreHasData() async {
+        let repo = MockProductsRepository()
+        repo.emit([.fixture(id: "1", name: "Alpha")]) // store already has products
+        let viewModel = ProductListViewModel(repository: repo, router: Router())
+
+        await viewModel.onAppear()
+
+        #expect(repo.loadCallCount == 1)
+        #expect(repo.refreshCallCount == 0)
+    }
+
+    @Test("returning to the list does not load again")
+    func onAppearRunsOncePerSession() async {
+        let repo = MockProductsRepository()
+        repo.emit([.fixture(id: "1", name: "Alpha")])
+        let viewModel = ProductListViewModel(repository: repo, router: Router())
+
+        await viewModel.onAppear()
+        await viewModel.onAppear()
+
+        #expect(repo.loadCallCount == 1)
+    }
 }
