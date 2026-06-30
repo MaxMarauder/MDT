@@ -13,15 +13,11 @@ MDT - is a little iOS app which:
 - on tap opens a product details page with fullscreen zoomable image
 - allows to add a custom note for a product
 ## Which architectures/technologies/frameworks are used?
+- SwiftUI
+- Combine
 - MVVM + Coordinators
 - Protocol Oriented Programming
 - CoreData
 - Unit and UI tests
-- Cocoapods
+- Swift Package Manager
 - Mockaroo - backend API mocking tool
-## How about SwiftUI?
-The repository includes **swiftui** branch with the project migrated to SwiftUI, where:
-- All ViewControllers and the application entry point have been converted to SwiftUI
-- ViewModels and Coordinators adapted to be used by SwiftUI Views
-- Cocoapods replaced with Swift Package Manager
-- Custom image caching replaced with a third-party framework for the sake of simplicity
