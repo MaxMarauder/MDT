@@ -1,70 +1,110 @@
 //
 //  ProductListViewModel.swift
-//  MDT
-//
-//  Created by Maksym Kershengolts on 18.05.19.
-//  Copyright © 2019 Maksym Kershengolts. All rights reserved.
+//  MDT — Presentation / ProductList
 //
 
 import Foundation
-import CoreData
+import Combine
+import ProductKit
 
-final class ProductListViewModel: NSObject, ViewModel, ObservableObject {
-    weak var coordinator: CoordinatorType?
-    
-    let fetchedResultsController: NSFetchedResultsController<Product>
-    
-    var products: [Product] {
-        return fetchedResultsController.fetchedObjects ?? []
+// MARK: - ProductListViewModel
+//
+// The list screen's view model, in the ObservableObject + Combine style (the
+// detail screen's view model uses the `@Observable` macro instead).
+//
+// `@MainActor` guarantees every property mutation and publish happens on the main
+// thread, so the UI never reads half-updated state. Heavy work is awaited on the
+// repository's background actors.
+@MainActor
+final class ProductListViewModel: ObservableObject {
+
+    // `@Published` bridges Combine and SwiftUI: each property synthesises a
+    // publisher and triggers `objectWillChange`, so views holding this object via
+    // `@StateObject` re-render automatically.
+    @Published var searchText: String = ""
+    @Published private(set) var items: [ProductListItem] = []
+
+    private let repository: any ProductsRepository
+    private let router: Router
+
+    /// Domain products matching the current filter, kept so a tapped row can be
+    /// resolved back to its domain `Product` for navigation.
+    private var filteredProducts: [Product] = []
+
+    /// Combine subscriptions are owned here; when the view model deallocates, the
+    /// pipeline is torn down automatically.
+    private var cancellables = Set<AnyCancellable>()
+
+    init(repository: any ProductsRepository, router: Router) {
+        self.repository = repository
+        self.router = router
+        bind()
     }
-    
-    var onProductsFetched: (() -> Void)?
 
-    @Published var searchText: String = "" {
-        didSet {
-            filter(with: searchText)
-        }
-    }
+    // MARK: Combine pipeline
+    //
+    // Declaratively wires "products" and "what the user typed" into "the filtered
+    // list to display":
+    //
+    //   searchText ──debounce──removeDuplicates──┐
+    //                                            ├─combineLatest──map(filter)──▶ items
+    //   repository.productsPublisher ────────────┘
+    //
+    // Why each operator:
+    //  - `debounce`: wait 250ms after typing stops, so we don't refilter on every
+    //    keystroke.
+    //  - `removeDuplicates`: ignore no-op changes (e.g. autocorrect re-emitting).
+    //  - `combineLatest`: re-run whenever either the data or the query changes, so a
+    //    refresh and a keystroke both update the list through one path.
+    //  - `map`: pure transform from domain → presentation models.
+    private func bind() {
+        let query = $searchText
+            .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
+            .removeDuplicates()
 
-    init(withCoordinator coordinator: CoordinatorType) {
-        self.coordinator = coordinator
-        fetchedResultsController = coordinator.repositories.productsRepository.productsFetchedResultsController
-        super.init()
-        fetchedResultsController.delegate = self
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            fatalError("Error fetching results \(error)")
-        }
-    }
-
-    func refresh(completion: @escaping () -> Void) {
-        coordinator?.repositories.productsRepository.requestProducts { result in
-            switch result {
-            case .success:
-                break
-            case .failure(let error):
-                print("Error: \(error)")
+        repository.productsPublisher
+            .combineLatest(query)
+            .map { products, query -> [Product] in
+                Self.filtered(products, query: query)
             }
-        }
-        completion()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] products in
+                self?.filteredProducts = products
+                self?.items = products.map(ProductListItem.init)
+            }
+            .store(in: &cancellables)
     }
 
-    func filter(with text: String) {
-        fetchedResultsController.fetchRequest.predicate = text.isEmpty ? nil : NSPredicate(format: "name CONTAINS[c] %@", text)
+    private static func filtered(_ products: [Product], query: String) -> [Product] {
+        guard !query.isEmpty else { return products }
+        return products.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
+
+    // MARK: Lifecycle / actions
+
+    /// Called from the view's `.task`: show persisted data immediately, then refresh
+    /// from the network.
+    func onAppear() async {
+        await repository.load()
+        await refresh()
+    }
+
+    /// Drives `.refreshable` (pull-to-refresh). Logs and swallows errors — a
+    /// production app would surface them.
+    func refresh() async {
         do {
-            try fetchedResultsController.performFetch()
+            try await repository.refresh()
         } catch {
-            fatalError("Error fetching results \(error)")
+            #if DEBUG
+            print("⛔️ Refresh failed: \(error)")
+            #endif
         }
-        objectWillChange.send()
-        onProductsFetched?()
     }
-}
 
-extension ProductListViewModel: NSFetchedResultsControllerDelegate {    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        objectWillChange.send()
-        onProductsFetched?()
+    /// The view hands back the tapped item; the view model decides to navigate and
+    /// delegates the mechanics to the `Router`.
+    func didSelect(_ item: ProductListItem) {
+        guard let product = filteredProducts.first(where: { $0.id == item.id }) else { return }
+        router.push(.productDetails(product))
     }
 }

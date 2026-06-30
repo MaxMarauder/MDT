@@ -2,35 +2,60 @@
 //  MockProductsRepository.swift
 //  MDTTests
 //
-//  Created by Maksym Kershengolts on 13.08.19.
-//  Copyright © 2019 Maksym Kershengolts. All rights reserved.
+//  Test double for the domain `ProductsRepository` port. The view-model tests
+//  depend only on this protocol, so they never touch networking or SwiftData —
+//  the payoff of putting every layer behind an abstraction.
 //
 
 import Foundation
-import CoreData
+import Combine
 @testable import MDT
+import ProductKit
 
-class MockProductsRepository: ProductsRepositoryType {
-    let coreDataManager: CoreDataManagerType
-    lazy var productsFetchedResultsController = {
-        self.coreDataManager.productsFetchedResultsController
-    }()
-    
-    var requestProductsCount: Int = 0
-    var setNoteCount: Int = 0
-    
-    init(coreDataManager: CoreDataManagerType) {
-        self.coreDataManager = coreDataManager
+@MainActor
+final class MockProductsRepository: ProductsRepository {
+
+    private let subject = CurrentValueSubject<[Product], Never>([])
+    var productsPublisher: AnyPublisher<[Product], Never> { subject.eraseToAnyPublisher() }
+
+    private(set) var loadCallCount = 0
+    private(set) var refreshCallCount = 0
+    private(set) var lastNote: String?
+    private(set) var lastNoteProductID: String?
+
+    func load() async { loadCallCount += 1 }
+
+    func refresh() async throws { refreshCallCount += 1 }
+
+    func updateNote(_ note: String?, productID: String) async throws {
+        lastNote = note
+        lastNoteProductID = productID
     }
-    
-    func requestProducts(completion: @escaping (Result<Void, APIError>) -> Void) {
-        requestProductsCount += 1
-        completion(.success(()))
+
+    /// Test helper: push a new product list through the publisher.
+    func emit(_ products: [Product]) {
+        subject.send(products)
     }
-    
-    func set(note: String?, product: Product) {
-        setNoteCount += 1
+}
+
+// Convenience domain fixtures for the presentation-layer tests.
+extension Product {
+    static func fixture(
+        id: String,
+        name: String,
+        originalPrice: Double = 10,
+        currentPrice: Double = 10,
+        note: String? = nil
+    ) -> Product {
+        Product(
+            identifier: id,
+            name: name,
+            brand: "Brand",
+            originalPrice: originalPrice,
+            currentPrice: currentPrice,
+            currency: "EUR",
+            image: ProductImage(id: 1, url: nil),
+            note: note
+        )
     }
-    
-    
 }

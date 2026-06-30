@@ -1,54 +1,54 @@
 //
 //  ProductRow.swift
-//  MDT
-//
-//  Created by Maksym Kershengolts on 11.10.25.
-//  Copyright © 2025 Maksym Kershengolts. All rights reserved.
+//  MDT — Presentation / ProductList
 //
 
 import SwiftUI
 import CachedAsyncImage
 
+// MARK: - ProductRow
+//
+// A pure, "dumb" view: it receives a ready-to-render `ProductListItem` and binds
+// its already-formatted strings to `Text`. No domain types and no formatting logic
+// live here, which keeps the row trivially previewable (see `#Preview`) and keeps
+// formatting testable without SwiftUI.
 struct ProductRow: View {
-    var product: Product
-    
+    let item: ProductListItem
+
     var body: some View {
         HStack(alignment: .top) {
-            CachedAsyncImage(url: URL(string: product.image?.url ?? ""), content: { image in
+            CachedAsyncImage(url: item.imageURL) { image in
                 image
                     .resizable()
                     .scaledToFit()
                     .frame(width: 120, height: 120)
-            }, placeholder: {
+            } placeholder: {
                 ProgressView()
                     .frame(width: 120, height: 120)
-            })
+            }
+
             VStack(alignment: .leading) {
-                Text(product.name ?? "")
+                Text(item.name)
                     .font(.system(size: 18, weight: .bold))
                     .padding(.top, 8)
-                Text(product.brand.flatMap { "by \($0)" } ?? "")
+                Text(item.byBrandText)
                     .font(.system(size: 18, weight: .heavy))
                     .foregroundStyle(Color(.lightGray))
-                Text(String(format: "%.2f %@", product.originalPrice, product.currency ?? ""))
-                    .font(.system(size: product.isDiscounted ? 12 : 16))
-                    .strikethrough(product.isDiscounted)
-                if (product.isDiscounted) {
-                    Text(String(format: "%.2f %@", product.currentPrice, product.currency ?? ""))
+                Text(item.priceText)
+                    .font(.system(size: item.isDiscounted ? 12 : 16))
+                    .strikethrough(item.isDiscounted)
+                if let discountedPriceText = item.discountedPriceText {
+                    Text(discountedPriceText)
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(Color(.systemRed))
                 }
-                Text(product.note ?? "")
+                Text(item.noteText)
                     .font(.system(size: 14))
                     .foregroundStyle(Color(.systemBlue))
             }
             .padding(.leading, 8)
+
             Spacer()
         }
     }
-}
-
-#Preview {
-    let product = ProductPreview()
-    ProductRow(product: product)
 }
